@@ -13,6 +13,9 @@ def config():
 def main():
     config()
     
+    # Definir la variable M
+    M = 10
+
     # Leer el archivo de texto
     input_file = 'KDDTrain.txt'
     output_file = 'Data.csv'
@@ -38,8 +41,6 @@ def main():
     print(f"Archivo CSV '{output_file}' creado con éxito.")
 
     # Leer el archivo Data.csv y dividir según la clase
-    data = np.genfromtxt(output_file, delimiter=',', dtype=str)
-
     class1_data = data[data[:, -1] == '1']
     class2_data = data[data[:, -1] == '2']
     class3_data = data[data[:, -1] == '3']
@@ -50,6 +51,24 @@ def main():
     np.savetxt('class3.csv', class3_data, delimiter=',', fmt='%s')
 
     print("Archivos 'class1.csv', 'class2.csv' y 'class3.csv' creados con éxito.")
+
+    # Leer los índices de los archivos idx_class1.csv, idx_class2.csv, idx_class3.csv
+    idx_class1 = np.genfromtxt('idx_class1.csv', delimiter=',', dtype=int)[:M]
+    idx_class2 = np.genfromtxt('idx_class2.csv', delimiter=',', dtype=int)[:M]
+    idx_class3 = np.genfromtxt('idx_class3.csv', delimiter=',', dtype=int)[:M]
+
+    # Leer los datos del archivo Data.csv
+    data = np.genfromtxt(output_file, delimiter=',', dtype=str)
+
+    # Obtener las filas correspondientes a los índices
+    selected_rows = np.vstack((data[idx_class1], data[idx_class2], data[idx_class3]))
+
+    # Guardar las 30 filas en un archivo CSV llamado DataClass.csv
+    np.savetxt('DataClass.csv', selected_rows, delimiter=',', fmt='%s')
+
+    print("Archivo 'DataClass.csv' creado con éxito.")
+
+
    
 if __name__ == '__main__':
     main()
