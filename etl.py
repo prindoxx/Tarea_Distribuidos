@@ -41,9 +41,9 @@ def main():
     print(f"Archivo CSV '{output_file}' creado con éxito.")
 
     # Leer el archivo Data.csv y dividir según la clase
-    class1_data = data[data[:, -1] == '1']
-    class2_data = data[data[:, -1] == '2']
-    class3_data = data[data[:, -1] == '3']
+    class1_data = data[data[:, -1] == '1', :-2]  # Eliminar las últimas dos columnas
+    class2_data = data[data[:, -1] == '2', :-2]
+    class3_data = data[data[:, -1] == '3', :-2]
 
     # Guardar cada clase en su respectivo archivo CSV
     np.savetxt('class1.csv', class1_data, delimiter=',', fmt='%s')
@@ -53,22 +53,31 @@ def main():
     print("Archivos 'class1.csv', 'class2.csv' y 'class3.csv' creados con éxito.")
 
     # Leer los índices de los archivos idx_class1.csv, idx_class2.csv, idx_class3.csv
-    idx_class1 = np.genfromtxt('idx_class1.csv', delimiter=',', dtype=int)[:M]
-    idx_class2 = np.genfromtxt('idx_class2.csv', delimiter=',', dtype=int)[:M]
-    idx_class3 = np.genfromtxt('idx_class3.csv', delimiter=',', dtype=int)[:M]
+    idx_class1 = np.genfromtxt('idx_class1.csv', delimiter=',', dtype=int)[:M] - 1
+    idx_class2 = np.genfromtxt('idx_class2.csv', delimiter=',', dtype=int)[:M] - 1
+    idx_class3 = np.genfromtxt('idx_class3.csv', delimiter=',', dtype=int)[:M] - 1
 
-    # Leer los datos del archivo Data.csv
-    data = np.genfromtxt(output_file, delimiter=',', dtype=str)
+    # Crear una lista para almacenar las filas seleccionadas con la clase agregada
+    selected_rows = []
 
-    # Obtener las filas correspondientes a los índices
-    selected_rows = np.vstack((data[idx_class1], data[idx_class2], data[idx_class3]))
+    # Añadir las filas correspondientes a cada clase, eliminando las últimas dos columnas y agregando el número de clase
+    for idx in idx_class1:
+        row = list(data[idx, :-2]) + ['1']  # Tomar los primeros 41 elementos y agregar clase 1
+        selected_rows.append(row)
 
-    # Guardar las 30 filas en un archivo CSV llamado DataClass.csv
+    for idx in idx_class2:
+        row = list(data[idx, :-2]) + ['2']  # Tomar los primeros 41 elementos y agregar clase 2
+        selected_rows.append(row)
+
+    for idx in idx_class3:
+        row = list(data[idx, :-2]) + ['3']  # Tomar los primeros 41 elementos y agregar clase 3
+        selected_rows.append(row)
+
+    # Convertir a numpy array y guardar en DataClass.csv con 42 elementos en cada fila
+    selected_rows = np.array(selected_rows)
     np.savetxt('DataClass.csv', selected_rows, delimiter=',', fmt='%s')
 
     print("Archivo 'DataClass.csv' creado con éxito.")
-
-
    
 if __name__ == '__main__':
     main()
